@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sensi Generator</title>
+
+<!-- Favicon -->
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192x192.png">
+
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -502,6 +510,7 @@ let currentValues = [];
 let phoneBrand = "";
 let sensiType = "normal"; // tipo de sensi (normal ou premium)
 let hasGeneratedOnce = false; // controla se já gerou uma sensi
+let normalSensiAttempts = 0; // contador de tentativas para sensi normal
 
 // ========== GET BRAND FROM URL ==========
 function getBrandFromURL() {
@@ -518,6 +527,12 @@ function getSensiTypeFromURL() {
 function init() {
   phoneBrand = getBrandFromURL();
   sensiType = getSensiTypeFromURL();
+  
+  // Carrega o contador de tentativas do localStorage (apenas para sensi normal)
+  if (sensiType === 'normal') {
+    const storedAttempts = localStorage.getItem('normalSensiAttempts');
+    normalSensiAttempts = storedAttempts ? parseInt(storedAttempts) : 0;
+  }
   
   if (phoneBrand === 'iPhone') {
     DEVICES = IPHONE_DEVICES;
@@ -581,6 +596,16 @@ function selectDevice(d) {
 function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
 function generateSensi() {
+  // Verifica limite de tentativas para sensi normal (3ª tentativa bloqueada)
+  if (sensiType === 'normal') {
+    if (normalSensiAttempts >= 2) {
+      showUpgradeToPremiumNotification();
+      return;
+    }
+    normalSensiAttempts++;
+    localStorage.setItem('normalSensiAttempts', normalSensiAttempts);
+  }
+  
   sensiCounter++;
   hasGeneratedOnce = true;
   // Gera valores normais (100-200) para os primeiros 5 itens
@@ -665,6 +690,64 @@ function closeNotification() {
     setTimeout(() => notification.remove(), 300);
   }
 }
+function showUpgradeToPremiumNotification() {
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #FFD700;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.4);
+    border: 3px solid #FFD700;
+    z-index: 10000;
+    text-align: center;
+    min-width: 320px;
+    animation: slideIn 0.4s cubic-bezier(0.16,1,0.3,1);
+  `;
+  
+  notification.innerHTML = `
+    <div style="font-size: 4rem; margin-bottom: 1rem;">⭐</div>
+    <h2 style="font-family: 'Orbitron', sans-serif; font-size: 1.6rem; margin-bottom: 1rem; color: #FFD700;">
+      ATUALIZE PARA VERSÃO PREMIUM
+    </h2>
+    <p style="font-size: 1.1rem; margin-bottom: 1rem; color: #ccc;">
+      Você já usou suas 2 gerações gratuitas!
+    </p>
+    <p style="font-size: 1rem; margin-bottom: 1.5rem; color: #aaa; line-height: 1.5;">
+      Desbloqueie <strong style="color: #FFD700;">gerações ilimitadas</strong> e recursos exclusivos com a versão Premium!
+    </p>
+    <button onclick="closePremiumNotification()" style="
+      background: #FFD700;
+      color: #1a1a2e;
+      border: none;
+      padding: 0.875rem 2.5rem;
+      border-radius: 0.5rem;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: all 0.2s;
+      margin-top: 0.5rem;
+    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+      ENTENDI
+    </button>
+  `;
+  
+  document.body.appendChild(notification);
+}
+
+function closePremiumNotification() {
+  const notification = document.querySelector('div[style*="position: fixed"]');
+  if (notification && notification.innerHTML.includes('ATUALIZE PARA VERSÃO PREMIUM')) {
+    notification.style.animation = 'slideOut 0.3s cubic-bezier(0.16,1,0.3,1) forwards';
+    setTimeout(() => notification.remove(), 300);
+  }
+}
+
 
 function renderResult() {
   document.getElementById("sensiTitle").textContent = "SENSI #" + sensiCounter;
@@ -747,7 +830,14 @@ function switchView(targetId) {
   }, 300);
 }
 
-function goHome() { switchView("homeView"); }
+function goHome() { 
+  // Se for sensi normal, redireciona para index.html
+  if (sensiType === 'normal') {
+    window.location.href = 'index.html';
+  } else {
+    switchView("homeView");
+  }
+}
 
 // ========== PARTICLES ==========
 (function() {
@@ -812,7 +902,68 @@ function goHome() { switchView("homeView"); }
 // ========== INITIALIZE ON LOAD ==========
 init();
 </script>
+
+<!-- PROTEÇÃO ANTI-INSPEÇÃO -->
+<script>
+  // Desabilita o clique direito
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    return false;
+  });
+
+  // Desabilita teclas de atalho para DevTools
+  document.addEventListener('keydown', function(e) {
+    // F12
+    if (e.keyCode === 123) {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+Shift+I
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+Shift+C
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+Shift+J
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+U (view source)
+    if (e.ctrlKey && e.keyCode === 85) {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+S (save)
+    if (e.ctrlKey && e.keyCode === 83) {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  // Detecta se o DevTools está aberto
+  const devtools = { isOpen: false };
+  const threshold = 160;
+
+  setInterval(function() {
+    if (window.outerWidth - window.innerWidth > threshold || 
+        window.outerHeight - window.innerHeight > threshold) {
+      devtools.isOpen = true;
+    } else {
+      devtools.isOpen = false;
+    }
+  }, 500);
+
+  // Desabilita console.log
+  console.log = function() {};
+  console.error = function() {};
+  console.warn = function() {};
+  console.info = function() {};
+</script>
 </body>
 
 </html>
-
