@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NUZ Sensi</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      background: #000000 !important;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    canvas#particles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .container {
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Pricing Section */
+    .pricing {
+      margin-top: 12px;
+      padding: 8px;
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+      border: 1px solid #FFD700;
+      border-radius: 5px;
+      text-align: center;
+    }
+    
+    .price-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      color: #ffffff;
+      margin: 0 0 6px 0;
+      font-weight: 500;
+    }
+    
+    .price-old {
+      color: #888;
+      text-decoration: line-through;
+      font-size: 10px;
+    }
+    
+    .price-new {
+      color: #FFD700;
+      font-size: 14px;
+      font-weight: 700;
+      text-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+    }
+    
+    .unlock-link {
+      display: inline-block;
+      padding: 6px 16px;
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      color: #000;
+      text-decoration: none;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(255, 215, 0, 0.3);
+    }
+    
+    .unlock-link:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px rgba(255, 215, 0, 0.5);
+      background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="particles"></canvas>
+  <div class="container">
+
+    <!-- HEADER -->
+    <header class="header">
+      <div class="title-wrapper">
+        <h1 class="main-title">GERADOR DE SENSI</h1>
+      </div>
+    </header>
+
+    <div class="gold-bar"></div>
+
+    <div class="subtitle-section">
+      <p class="brand-name">NUZ Sensi</p>
+      <p class="description">Sensibilidade otimizada para capa no Free Fire</p>
+    </div>
+
+    <!-- CONTEÚDO -->
+    <main class="main-content">
+      <div class="form-container">
+
+        <!-- TIPO DE SENSI -->
+        <div class="toggle-group">
+          <button id="btn-normal" class="tab-toggle tab-active" onclick="setSensiType('normal')">
+            Sensi Normal
+          </button>
+          <button id="btn-premium" class="tab-toggle" onclick="setSensiType('premium')">
+            Sensi Premium
+          </button>
+        </div>
+
+        <!-- MARCA -->
+        <div class="form-group">
+          <label class="label">Marca do Celular</label>
+          <div class="select-wrapper">
+            <select id="phone-brand" class="gaming-select">
+              <option value="">Selecione</option>
+              <option value="iPhone">iPhone</option>
+              <option value="Samsung">Samsung</option>
+              <option value="Xiaomi">Xiaomi</option>
+              <option value="Motorola">Motorola</option>
+              <option value="Realme">Realme</option>
+              <option value="POCO">POCO</option>
+              <option value="OnePlus">OnePlus</option>
+              <option value="ASUS ROG">ASUS ROG</option>
+              <option value="Redmi">Redmi</option>
+              <option value="Outro">Outro</option>
+            </select>
+            <span class="select-arrow">▼</span>
+          </div>
+        </div>
+
+        <!-- SENHA -->
+        <div class="form-group">
+          <label class="label">Senha de Acesso</label>
+          <div class="input-wrapper">
+            <input
+              type="password"
+              id="password"
+              class="gaming-input"
+              placeholder="Digite a senha"
+            >
+          </div>
+        </div>
+
+        <!-- BOTÃO -->
+        <button class="btn-primary" onclick="generateSensi()">
+          Gerar Sensi
+        </button>
+
+        <!-- PRICING -->
+        <div class="pricing">
+          <p class="price-text">
+            De <span class="price-old">R$99,90</span> por apenas 
+            <span class="price-new">R$9,90</span>
+          </p>
+          <a href="https://pay.kiwify.com.br/oMxsXy6" target="_blank" class="unlock-link">Desbloquear senha</a>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      © 2026 Nicolas Zunk • todos os direitos reservados!
+    </footer>
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    let sensiType = "normal"; // padrão
+
+    function setSensiType(type) {
+      sensiType = type;
+
+      document.getElementById("btn-normal").classList.remove("tab-active");
+      document.getElementById("btn-premium").classList.remove("tab-active");
+
+      if (type === "normal") {
+        document.getElementById("btn-normal").classList.add("tab-active");
+      } else {
+        document.getElementById("btn-premium").classList.add("tab-active");
+      }
+    }
+
+    function generateSensi() {
+      const brand = document.getElementById("phone-brand").value;
+      const password = document.getElementById("password").value.trim();
+
+      if (brand === "") {
+        alert("Selecione a marca do celular.");
+        return;
+      }
+
+      // valida senha conforme tipo
+      let senhaCorreta = false;
+      
+      if (sensiType === "normal" && password === "z9") {
+        senhaCorreta = true;
+      } else if (sensiType === "premium" && password === "zk@91e2026") {
+        senhaCorreta = true;
+      }
+      
+      if (senhaCorreta) {
+        // Passa a marca do celular e o tipo de sensi via URL
+        window.location.href = "zksistema.html?brand=" + encodeURIComponent(brand) + "&type=" + sensiType;
+      } else {
+        if (sensiType === "normal") {
+          alert("Senha incorreta!");
+        } else {
+          alert("Senha incorreta!");
+        }
+      }
+    }
+  </script>
+
+  <!-- PARTICLES ANIMATION -->
+  <script>
+(function() {
+  const canvas = document.getElementById("particles");
+  const ctx = canvas.getContext("2d");
+  let particles = [];
+
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener("resize", resize);
+
+  for (let i = 0; i < 60; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      size: Math.random() * 2.5 + 0.5,
+      alpha: Math.random() * 0.5 + 0.1,
+      pulse: Math.random() * Math.PI * 2
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.pulse += 0.02;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+      const glow = Math.sin(p.pulse) * 0.2 + 0.8;
+      const a = p.alpha * glow;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = "hsla(48,100%,50%," + a + ")";
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = "hsla(48,100%,50%," + (a * 0.6) + ")";
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    });
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = "hsla(48,100%,50%," + (0.08 * (1 - dist / 120)) + ")";
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+  </script>
+
+</body>
+</html>
