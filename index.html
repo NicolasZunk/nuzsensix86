@@ -272,8 +272,16 @@
       
       if (sensiType === "normal" && password === "z9") {
         senhaCorreta = true;
-      } else if (sensiType === "premium" && password === "zk@91e2026") {
-        senhaCorreta = true;
+      } else if (sensiType === "premium") {
+        // Valida senhas premium de zk@91e2026 até zk@110e2026
+        const senhasPremium = [];
+        for (let i = 91; i <= 110; i++) {
+          senhasPremium.push("zk@" + i + "e2026");
+        }
+        
+        if (senhasPremium.includes(password)) {
+          senhaCorreta = true;
+        }
       }
       
       if (senhaCorreta) {
